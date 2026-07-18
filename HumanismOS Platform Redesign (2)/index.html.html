@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+html{scroll-behavior:smooth}
+body{margin:0;background:#FBFAFE;color:#17131F;font-family:Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:#7C3AED;text-decoration:none}a:hover{color:#A78BFA}
+::selection{background:rgba(167,139,250,.3)}
+input,textarea{font-family:Inter,system-ui,sans-serif}
+input::placeholder,textarea::placeholder{color:#877F97}
+@keyframes aurora1{0%,100%{transform:translate(-8%,-4%) scale(1)}50%{transform:translate(10%,8%) scale(1.18)}}
+@keyframes aurora2{0%,100%{transform:translate(8%,10%) scale(1.08)}50%{transform:translate(-10%,-8%) scale(.92)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes marqueeRev{from{transform:translateX(-50%)}to{transform:translateX(0)}}
+@keyframes floaty{0%,100%{transform:translateY(0) rotate(var(--rot,0deg))}50%{transform:translateY(-14px) rotate(var(--rot,0deg))}}
+@keyframes floaty2{0%,100%{transform:translateY(-8px) rotate(var(--rot,0deg))}50%{transform:translateY(8px) rotate(var(--rot,0deg))}}
+@keyframes kenburns{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+@keyframes pulseDot{0%,100%{opacity:.45}50%{opacity:1}}
+@keyframes shimmer{from{background-position:0% 50%}to{background-position:200% 50%}}
+@keyframes wordIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scrollHint{0%,100%{transform:translateY(0);opacity:.9}50%{transform:translateY(8px);opacity:.4}}
+@keyframes twinkle{0%,100%{opacity:.12;transform:scale(.7)}50%{opacity:.9;transform:scale(1.25)}}
+@keyframes ripple{0%{box-shadow:0 0 0 0 rgba(251,191,36,.5)}100%{box-shadow:0 0 0 12px rgba(251,191,36,0)}}
+@keyframes spinSlow{to{transform:rotate(360deg)}}
+@keyframes blobMorph{0%,100%{border-radius:60% 40% 55% 45%/50% 60% 40% 50%;transform:rotate(0deg) scale(1)}33%{border-radius:45% 55% 40% 60%/60% 45% 55% 40%;transform:rotate(6deg) scale(1.06)}66%{border-radius:55% 45% 60% 40%/45% 55% 45% 60%;transform:rotate(-5deg) scale(.96)}}
+@keyframes formGlow{0%,100%{box-shadow:0 0 0 rgba(167,139,250,0)}50%{box-shadow:0 0 52px rgba(167,139,250,.28)}}
+body[data-reduced-motion="true"] *{animation-duration:.01s!important;animation-iteration-count:1!important;transition-duration:.1s!important}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+</helmet>
+
+<nav id="hos-nav" aria-label="Main" style="position:fixed;top:0;left:0;right:0;z-index:90;display:flex;align-items:center;justify-content:space-between;padding:14px clamp(20px,4vw,48px);transition:background .35s,box-shadow .35s,backdrop-filter .35s;background:transparent">
+  <a href="#top" aria-label="HumanismOS home" style="display:flex;align-items:center;gap:10px;color:#fff">
+    <img src="https://www.humanismos.com/assets/emblem-new.png" alt="HumanismOS emblem" width="30" height="30" style="display:block;border-radius:8px"></img>
+    <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;letter-spacing:-0.01em;color:#fff">HumanismOS</span>
+  </a>
+  <sc-if value="{{ isDesktop }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;align-items:center;gap:2px">
+      <sc-for list="{{ navLinks }}" as="l" hint-placeholder-count="8">
+        <a href="{{ l.href }}" style="font-size:13.5px;font-weight:500;color:rgba(255,255,255,.75);padding:8px 12px;border-radius:999px;transition:color .2s,background .2s" style-hover="color:#fff;background:rgba(255,255,255,.09)">{{ l.label }}</a>
+      </sc-for>
+      <a href="#connect" data-magnetic="" style="margin-left:10px;display:inline-block;font-size:13.5px;font-weight:600;color:#120F1C;background:linear-gradient(110deg,#A78BFA,#FBBF24,#A78BFA);background-size:200% auto;animation:shimmer 5s linear infinite;padding:11px 20px;border-radius:999px;transition:box-shadow .25s" style-hover="box-shadow:0 0 28px rgba(167,139,250,.5)">Start a conversation</a>
+    </div>
+  </sc-if>
+  <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ false }}">
+    <button onClick="{{ toggleMenu }}" aria-label="Open menu" style="display:flex;flex-direction:column;gap:5px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;padding:12px;cursor:pointer">
+      <span style="display:block;width:20px;height:2px;background:#fff;border-radius:2px"></span>
+      <span style="display:block;width:20px;height:2px;background:#fff;border-radius:2px"></span>
+      <span style="display:block;width:14px;height:2px;background:#A78BFA;border-radius:2px"></span>
+    </button>
+  </sc-if>
+</nav>
+
+<sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+  <div role="dialog" aria-label="Menu" style="position:fixed;inset:0;z-index:100;background:rgba(18,15,28,.97);backdrop-filter:blur(12px);display:flex;flex-direction:column;padding:24px;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;color:#fff">HumanismOS</span>
+      <button onClick="{{ toggleMenu }}" aria-label="Close menu" style="background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);border-radius:12px;color:#fff;font-size:18px;padding:10px 16px;cursor:pointer">✕</button>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:4px;margin-top:40px">
+      <sc-for list="{{ navLinks }}" as="l" hint-placeholder-count="8">
+        <a href="{{ l.href }}" onClick="{{ toggleMenu }}" style="font-family:'Space Grotesk',sans-serif;font-size:28px;font-weight:600;color:#fff;padding:12px 8px;border-bottom:1px solid rgba(255,255,255,.08)">{{ l.label }}</a>
+      </sc-for>
+      <a href="#connect" onClick="{{ toggleMenu }}" style="margin-top:24px;text-align:center;font-size:16px;font-weight:600;color:#120F1C;background:linear-gradient(110deg,#A78BFA,#FBBF24);padding:16px 24px;border-radius:999px">Start a conversation</a>
+    </div>
+  </div>
+</sc-if>
+
+<header id="top" data-screen-label="Hero" style="position:relative;min-height:100svh;background:#120F1C;overflow:hidden;display:flex;flex-direction:column">
+  <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none">
+    <div style="position:absolute;top:-25%;left:-12%;width:65vw;height:65vw;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.14),transparent 60%);filter:blur(70px);animation:aurora1 16s ease-in-out infinite"></div>
+    <div style="position:absolute;bottom:-30%;right:-15%;width:60vw;height:60vw;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.10),transparent 60%);filter:blur(80px);animation:aurora2 20s ease-in-out infinite"></div>
+  </div>
+  <sc-if value="{{ heroAurora }}" hint-placeholder-val="{{ false }}">
+    <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none">
+      <div style="position:absolute;top:10%;right:5%;width:50vw;height:50vw;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.20),transparent 60%);filter:blur(60px);animation:aurora2 12s ease-in-out infinite"></div>
+      <div style="position:absolute;bottom:0;left:20%;width:45vw;height:45vw;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.16),transparent 60%);filter:blur(60px);animation:aurora1 15s ease-in-out infinite reverse"></div>
+    </div>
+  </sc-if>
+  <div id="hos-spot" aria-hidden="true" style="position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .4s"></div>
+  <div style="position:relative;flex:1;display:flex;flex-wrap:wrap;align-items:center;gap:clamp(24px,4vw,48px);max-width:1280px;width:100%;margin:0 auto;padding:clamp(110px,15vh,150px) clamp(20px,4vw,48px) 40px;box-sizing:border-box">
+    <div style="flex:1 1 500px;min-width:min(500px,100%)">
+      <div data-reveal="" style="display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(167,139,250,.35);background:rgba(167,139,250,.07);border-radius:999px;padding:7px 16px;margin-bottom:28px">
+        <span style="width:7px;height:7px;border-radius:50%;background:#FBBF24;animation:pulseDot 2s ease-in-out infinite"></span>
+        <span style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#A78BFA">Human-centered AI &amp; digital transformation</span>
+      </div>
+      <h1 style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(44px,7vw,94px);line-height:1.02;letter-spacing:-0.03em;color:#FBFAFE;margin:0 0 26px;text-wrap:balance">
+        Return to<br>
+        <span id="hos-word" style="display:inline-block;background:linear-gradient(100deg,#A78BFA,#FBBF24,#F0ABFC,#A78BFA);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 6s linear infinite">{{ heroWord }}</span>
+      </h1>
+      <p data-reveal="" style="font-size:clamp(16px,1.6vw,19px);line-height:1.7;color:rgba(231,228,238,.72);max-width:56ch;margin:0 0 36px;text-wrap:pretty">We build human-centered AI platforms and digital ecosystems that help organizations and communities coordinate the care, expertise, and contribution they already hold — at scale.</p>
+      <div data-reveal="" style="display:flex;flex-wrap:wrap;gap:14px;align-items:center">
+        <a href="#connect" data-magnetic="" style="display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:#120F1C;background:linear-gradient(110deg,#A78BFA,#FBBF24,#A78BFA);background-size:200% auto;animation:shimmer 4s linear infinite;padding:16px 30px;border-radius:999px;transition:box-shadow .25s" style-hover="box-shadow:0 0 40px rgba(167,139,250,.45)">Start a conversation <span aria-hidden="true">→</span></a>
+        <a href="#platforms" data-magnetic="" style="display:inline-flex;align-items:center;gap:10px;font-size:15px;font-weight:600;color:#FBFAFE;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.05);backdrop-filter:blur(8px);padding:15px 28px;border-radius:999px;transition:background .25s,border-color .25s" style-hover="background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.4);color:#fff">Explore the platforms</a>
+      </div>
+      <div data-reveal="" style="display:flex;flex-wrap:wrap;gap:clamp(20px,4vw,48px);margin-top:clamp(40px,6vh,60px)">
+        <sc-for list="{{ heroStats }}" as="s" hint-placeholder-count="3">
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;color:#FBFAFE"><span data-count="{{ s.n }}">{{ s.n }}</span><span style="color:#A78BFA">{{ s.suffix }}</span></div>
+            <div style="font-size:13px;color:rgba(168,160,185,.95);margin-top:2px">{{ s.label }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+    <div style="flex:1 1 400px;min-width:min(400px,100%);display:flex;justify-content:center">
+      <sc-if value="{{ heroCollage }}" hint-placeholder-val="{{ true }}">
+        <div data-reveal="" style="width:min(560px,92vw);aspect-ratio:1/1.02;position:relative">
+          <div style="--rot:-4deg;position:absolute;top:2%;left:4%;width:52%;aspect-ratio:4/5;border-radius:22px;overflow:hidden;box-shadow:0 32px 64px -24px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.14);animation:floaty 9s ease-in-out infinite;transform:rotate(-4deg)">
+            <img src="https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=60" alt="Friends laughing together outdoors" style="width:100%;height:100%;object-fit:cover;animation:kenburns 18s ease-in-out infinite"></img>
+          </div>
+          <div style="--rot:3deg;position:absolute;top:12%;right:0;width:44%;aspect-ratio:4/5;border-radius:22px;overflow:hidden;box-shadow:0 32px 64px -24px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.14);animation:floaty2 11s ease-in-out infinite;transform:rotate(3deg)">
+            <img src="https://images.unsplash.com/photo-1544027993-37dbfe43562a?auto=format&fit=crop&w=800&q=60" alt="Generations holding hands" style="width:100%;height:100%;object-fit:cover;animation:kenburns 22s ease-in-out infinite"></img>
+          </div>
+          <div style="--rot:2deg;position:absolute;bottom:6%;left:12%;width:46%;aspect-ratio:5/4;border-radius:22px;overflow:hidden;box-shadow:0 32px 64px -24px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.14);animation:floaty 12s ease-in-out infinite 1.5s;transform:rotate(2deg)">
+            <img src="https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=60" alt="Community gathered around a fire" style="width:100%;height:100%;object-fit:cover;animation:kenburns 20s ease-in-out infinite"></img>
+          </div>
+          <div style="--rot:-2deg;position:absolute;bottom:0;right:6%;width:34%;aspect-ratio:1/1;border-radius:22px;overflow:hidden;box-shadow:0 32px 64px -24px rgba(0,0,0,.6);border:1px solid rgba(255,255,255,.14);animation:floaty2 10s ease-in-out infinite .8s;transform:rotate(-2deg)">
+            <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=800&q=60" alt="Colleagues supporting each other" style="width:100%;height:100%;object-fit:cover;animation:kenburns 24s ease-in-out infinite"></img>
+          </div>
+          <div aria-hidden="true" style="position:absolute;top:44%;left:0;background:rgba(26,22,38,.78);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px);border-radius:14px;padding:12px 16px;animation:floaty 8s ease-in-out infinite .5s;box-shadow:0 16px 40px -12px rgba(0,0,0,.5)">
+            <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(168,160,185,1)">Contribution tracked</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;color:#A78BFA">Beyond currency</div>
+          </div>
+          <div aria-hidden="true" style="position:absolute;top:0;right:28%;background:rgba(26,22,38,.78);border:1px solid rgba(255,255,255,.14);backdrop-filter:blur(10px);border-radius:14px;padding:12px 16px;animation:floaty2 9s ease-in-out infinite;box-shadow:0 16px 40px -12px rgba(0,0,0,.5)">
+            <div style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(168,160,185,1)">Communities connected</div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:700;color:#FBBF24">In 7 languages</div>
+          </div>
+        </div>
+      </sc-if>
+      <sc-if value="{{ heroGlobe }}" hint-placeholder-val="{{ false }}">
+        <div data-reveal="" style="width:min(560px,92vw);aspect-ratio:1/1;position:relative">
+          <x-import component-from-global-scope="ai-globe" from="./globe.js" hint-size="100%,100%" style="position:absolute;inset:0"></x-import>
+        </div>
+      </sc-if>
+      <sc-if value="{{ heroAurora }}" hint-placeholder-val="{{ false }}">
+        <div data-reveal="" style="width:min(520px,92vw);display:flex;flex-direction:column;gap:16px;padding:24px 0">
+          <sc-for list="{{ auroraCards }}" as="a" hint-placeholder-count="3">
+            <div style="background:rgba(26,22,38,.6);border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(14px);border-radius:18px;padding:22px 26px;display:flex;align-items:center;gap:18px;animation:floaty 9s ease-in-out infinite;animation-delay:{{ a.delay }}">
+              <span style="width:10px;height:10px;border-radius:50%;background:{{ a.dot }};box-shadow:0 0 14px {{ a.dot }}"></span>
+              <div>
+                <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:#FBFAFE">{{ a.title }}</div>
+                <div style="font-size:13.5px;color:rgba(168,160,185,1);margin-top:2px">{{ a.sub }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </div>
+  <div aria-hidden="true" style="position:relative;display:flex;justify-content:center;padding-bottom:26px">
+    <div style="width:24px;height:40px;border:1.5px solid rgba(255,255,255,.3);border-radius:14px;display:flex;justify-content:center;padding-top:8px"><span style="width:3px;height:8px;border-radius:3px;background:#A78BFA;animation:scrollHint 1.8s ease-in-out infinite"></span></div>
+  </div>
+</header>
+
+<section id="story" data-screen-label="Story" style="background:#FBFAFE;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div style="max-width:1240px;margin:0 auto">
+    <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B45309;margin-bottom:16px">Why we exist</div>
+    <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,54px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#17131F;margin:0;max-width:20ch;text-wrap:balance">The moments that made us build this.</h2>
+    <p data-reveal="" style="font-size:17px;line-height:1.7;color:#565062;max-width:62ch;margin:22px 0 0;text-wrap:pretty">Every platform we build began as an ordinary moment — a gap between what people already want to do for each other and the infrastructure to make it happen.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(270px,100%),1fr));gap:20px;margin-top:clamp(40px,5vw,64px)">
+      <sc-for list="{{ moments }}" as="m" hint-placeholder-count="4">
+        <article data-reveal="" data-tilt="" style="background:#fff;border:1px solid #E7E3F0;border-radius:20px;overflow:hidden;display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s;will-change:transform" style-hover="box-shadow:0 24px 48px -20px rgba(23,18,32,.2)">
+          <div style="height:170px;overflow:hidden"><img src="{{ m.img }}" alt="{{ m.alt }}" style="width:100%;height:100%;object-fit:cover;transition:transform .5s" loading="lazy"></img></div>
+          <div style="padding:24px 24px 28px;display:flex;flex-direction:column;gap:12px;flex:1">
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:{{ m.tint }}">{{ m.app }}</div>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:600;letter-spacing:-0.01em;color:#17131F;margin:0">{{ m.title }}</h3>
+            <p style="font-size:14.5px;line-height:1.65;color:#565062;margin:0;flex:1">{{ m.quote }}</p>
+            <p style="font-size:14.5px;line-height:1.6;font-weight:600;color:#17131F;margin:0;text-wrap:pretty">{{ m.whatif }}</p>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Mission" style="position:relative;background:#120F1C;overflow:hidden;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none">
+    <div style="position:absolute;top:-30%;right:-10%;width:60vw;height:60vw;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.12),transparent 60%);filter:blur(60px);animation:aurora1 18s ease-in-out infinite"></div>
+    <div style="position:absolute;bottom:-35%;left:-15%;width:55vw;height:55vw;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.08),transparent 60%);filter:blur(70px);animation:aurora2 22s ease-in-out infinite"></div>
+  </div>
+  <div style="position:relative;max-width:1100px;margin:0 auto;text-align:center">
+    <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#A78BFA;margin-bottom:20px">Beyond currency</div>
+    <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(30px,4.5vw,56px);font-weight:600;letter-spacing:-0.025em;line-height:1.15;color:#FBFAFE;margin:0 auto;max-width:24ch;text-wrap:balance">Capital is reputation. Expertise. Track record. <span style="color:#FBBF24">Loyalty.</span></h2>
+    <p data-reveal="" style="font-size:17px;line-height:1.75;color:rgba(214,209,226,.8);max-width:60ch;margin:26px auto 0;text-wrap:pretty">We reduced it to one metric — money — and then wondered why everything felt transactional. We're building the return to what capital was always meant to be: the full measure of what you contribute, and what you've earned by showing up for others.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(150px,100%),1fr));gap:18px;margin-top:clamp(48px,6vw,72px)">
+      <sc-for list="{{ metrics }}" as="mt" hint-placeholder-count="4">
+        <div data-reveal="" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(8px);border-radius:18px;padding:26px 18px;transition:border-color .3s,background .3s" style-hover="border-color:rgba(167,139,250,.4);background:rgba(167,139,250,.05)">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:clamp(34px,4vw,46px);font-weight:700;color:#FBFAFE;line-height:1"><span data-count="{{ mt.n }}">{{ mt.n }}</span><span style="color:#FBBF24">{{ mt.suffix }}</span></div>
+          <div style="font-size:13.5px;color:rgba(168,160,185,1);margin-top:8px">{{ mt.label }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="services" data-screen-label="Services" style="background:#FBFAFE;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:20px">
+      <div>
+        <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B45309;margin-bottom:16px">What we do</div>
+        <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,54px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#17131F;margin:0;max-width:18ch;text-wrap:balance">AI &amp; transformation, in service of people.</h2>
+      </div>
+      <p data-reveal="" style="font-size:16px;line-height:1.7;color:#565062;max-width:40ch;margin:0;text-wrap:pretty">Strategy, engineering, and enablement — every engagement anchored to human outcomes, not model benchmarks.</p>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:20px;margin-top:clamp(40px,5vw,64px)">
+      <sc-for list="{{ services }}" as="sv" hint-placeholder-count="6">
+        <article data-reveal="" data-tilt="" style="position:relative;background:#fff;border:1px solid #E7E3F0;border-radius:20px;padding:30px 28px;display:flex;flex-direction:column;gap:14px;transition:transform .3s,box-shadow .3s,border-color .3s;will-change:transform;overflow:hidden" style-hover="box-shadow:0 24px 48px -20px rgba(23,18,32,.2);border-color:#D8CFF0">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;color:#B45309;letter-spacing:.08em">{{ sv.num }}</span>
+            <span aria-hidden="true" style="width:34px;height:34px;border-radius:10px;background:{{ sv.chip }};display:inline-block"></span>
+          </div>
+          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:600;letter-spacing:-0.01em;color:#17131F;margin:0">{{ sv.title }}</h3>
+          <p style="font-size:15px;line-height:1.65;color:#565062;margin:0;text-wrap:pretty">{{ sv.desc }}</p>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="platforms" data-screen-label="Platforms" style="background:#F3F0FA;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div style="max-width:1240px;margin:0 auto">
+    <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B45309;margin-bottom:16px">Products &amp; platforms</div>
+    <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,54px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#17131F;margin:0;max-width:22ch;text-wrap:balance">Four platforms. One operating system for contribution.</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:20px;margin-top:clamp(40px,5vw,64px)">
+      <sc-for list="{{ platforms }}" as="p" hint-placeholder-count="4">
+        <article data-reveal="" style="position:relative;background:#fff;border:1px solid #E7E3F0;border-radius:22px;padding:30px 28px;display:flex;flex-direction:column;gap:14px;transition:transform .3s,box-shadow .3s" style-hover="transform:translateY(-6px);box-shadow:0 28px 56px -24px rgba(23,18,32,.24)">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="width:52px;height:52px;border-radius:14px;background:#FBFAFE;border:1px solid #E7E3F0;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="{{ p.logo }}" alt="{{ p.name }} logo" style="width:38px;height:38px;object-fit:contain" loading="lazy"></img></span>
+            <span style="display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:{{ p.statusColor }};background:{{ p.statusBg }};border-radius:999px;padding:5px 12px"><span style="width:6px;height:6px;border-radius:50%;background:{{ p.statusColor }};animation:pulseDot 2s ease-in-out infinite"></span>{{ p.status }}</span>
+          </div>
+          <h3 style="font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;letter-spacing:-0.01em;color:#17131F;margin:0">{{ p.name }}</h3>
+          <p style="font-size:15px;line-height:1.65;color:#565062;margin:0;flex:1;text-wrap:pretty">{{ p.desc }}</p>
+          <a href="{{ p.href }}" target="_blank" rel="noopener" style="display:inline-flex;align-items:center;gap:8px;font-size:14.5px;font-weight:600;color:#7C3AED;transition:gap .2s" style-hover="gap:14px;color:#A78BFA">{{ p.cta }} <span aria-hidden="true">→</span></a>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="cases" data-screen-label="Case Studies" style="background:#FBFAFE;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div style="max-width:1240px;margin:0 auto">
+    <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B45309;margin-bottom:16px">Case studies</div>
+    <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,54px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#17131F;margin:0;max-width:20ch;text-wrap:balance">Proof that care scales.</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:20px;margin-top:clamp(40px,5vw,64px)">
+      <sc-for list="{{ cases }}" as="c" hint-placeholder-count="3">
+        <article data-reveal="" style="background:#fff;border:1px solid #E7E3F0;border-radius:22px;overflow:hidden;display:flex;flex-direction:column;transition:transform .3s,box-shadow .3s" style-hover="transform:translateY(-6px);box-shadow:0 28px 56px -24px rgba(23,18,32,.24)">
+          <div style="height:200px;overflow:hidden;position:relative">
+            <img src="{{ c.img }}" alt="{{ c.alt }}" style="width:100%;height:100%;object-fit:cover" loading="lazy"></img>
+            <span style="position:absolute;top:14px;left:14px;font-size:11.5px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#fff;background:rgba(18,15,28,.72);backdrop-filter:blur(8px);border-radius:999px;padding:6px 14px">{{ c.tag }}</span>
+          </div>
+          <div style="padding:26px 26px 30px;display:flex;flex-direction:column;gap:12px;flex:1">
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600;letter-spacing:-0.01em;color:#17131F;margin:0;text-wrap:balance">{{ c.title }}</h3>
+            <p style="font-size:14.5px;line-height:1.65;color:#565062;margin:0;flex:1;text-wrap:pretty">{{ c.desc }}</p>
+            <div style="display:flex;align-items:center;gap:10px;border-top:1px solid #ECE8F4;padding-top:16px">
+              <span style="font-family:'Space Grotesk',sans-serif;font-size:24px;font-weight:700;color:#7C3AED">{{ c.stat }}</span>
+              <span style="font-size:13px;color:#565062">{{ c.statLabel }}</span>
+            </div>
+          </div>
+        </article>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="industries" data-screen-label="Industries" style="background:#F3F0FA;padding:clamp(80px,10vw,140px) 0;overflow:hidden">
+  <div style="max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px)">
+    <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B45309;margin-bottom:16px">Industry solutions</div>
+    <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,54px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#17131F;margin:0;max-width:20ch;text-wrap:balance">Wherever people and systems meet.</h2>
+  </div>
+  <div aria-hidden="true" style="margin-top:clamp(36px,5vw,56px);display:flex;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)">
+    <div style="display:flex;gap:14px;flex-shrink:0;animation:marquee 36s linear infinite;padding-right:14px">
+      <sc-for list="{{ marqueeItems }}" as="mi" hint-placeholder-count="16">
+        <span style="white-space:nowrap;font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;color:#17131F;background:#fff;border:1px solid #E7E3F0;border-radius:999px;padding:12px 24px">{{ mi }}</span>
+      </sc-for>
+    </div>
+  </div>
+  <div style="max-width:1240px;margin:clamp(36px,5vw,56px) auto 0;padding:0 clamp(20px,4vw,48px);display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:16px">
+    <sc-for list="{{ industries }}" as="ind" hint-placeholder-count="8">
+      <div data-reveal="" style="position:relative;border-radius:18px;overflow:hidden;min-height:220px;display:flex;align-items:flex-end;transition:transform .3s" style-hover="transform:translateY(-5px)">
+        <img src="{{ ind.img }}" alt="{{ ind.alt }}" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover" loading="lazy"></img>
+        <div aria-hidden="true" style="position:absolute;inset:0;background:linear-gradient(to top,rgba(18,15,28,.88) 20%,rgba(18,15,28,.15) 65%)"></div>
+        <div style="position:relative;padding:20px 22px">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:#fff">{{ ind.name }}</div>
+          <div style="font-size:13.5px;line-height:1.55;color:rgba(231,228,238,.85);margin-top:5px;text-wrap:pretty">{{ ind.value }}</div>
+        </div>
+      </div>
+    </sc-for>
+  </div>
+</section>
+
+<section id="stack" data-screen-label="Tech Stack" style="position:relative;background:#120F1C;overflow:hidden;padding:clamp(80px,10vw,140px) 0">
+  <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none">
+    <div style="position:absolute;top:-20%;left:-10%;width:50vw;height:50vw;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.10),transparent 60%);filter:blur(70px);animation:aurora2 20s ease-in-out infinite"></div>
+  </div>
+  <div style="position:relative;max-width:1240px;margin:0 auto;padding:0 clamp(20px,4vw,48px)">
+    <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#A78BFA;margin-bottom:16px">Technology</div>
+    <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,54px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#FBFAFE;margin:0;max-width:20ch;text-wrap:balance">A modern stack, chosen for trust.</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(260px,100%),1fr));gap:18px;margin-top:clamp(40px,5vw,60px)">
+      <sc-for list="{{ stack }}" as="sk" hint-placeholder-count="4">
+        <div data-reveal="" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:26px 24px;transition:border-color .3s,background .3s" style-hover="border-color:rgba(251,191,36,.45);background:rgba(251,191,36,.04)">
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;color:{{ sk.color }};margin-bottom:14px">{{ sk.cat }}</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px">
+            <sc-for list="{{ sk.items }}" as="ski" hint-placeholder-count="5">
+              <span style="font-size:13px;font-weight:500;color:rgba(231,228,238,.85);border:1px solid rgba(255,255,255,.14);border-radius:999px;padding:7px 14px;transition:border-color .2s,color .2s" style-hover="border-color:#A78BFA;color:#A78BFA">{{ ski }}</span>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+  <div aria-hidden="true" style="margin-top:clamp(40px,5vw,60px);display:flex;overflow:hidden;mask-image:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)">
+    <div style="display:flex;gap:36px;flex-shrink:0;animation:marqueeRev 44s linear infinite;padding-right:36px">
+      <sc-for list="{{ techMarquee }}" as="tm" hint-placeholder-count="20">
+        <span style="white-space:nowrap;font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:600;color:rgba(255,255,255,.22)">{{ tm }}</span>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="process" data-screen-label="Process" style="background:#FBFAFE;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div style="max-width:1140px;margin:0 auto;display:flex;flex-wrap:wrap;gap:clamp(32px,6vw,80px)">
+    <div style="flex:1 1 320px;min-width:min(320px,100%)">
+      <div data-reveal="" style="position:sticky;top:110px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B45309;margin-bottom:16px">How we work</div>
+        <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,50px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#17131F;margin:0;max-width:14ch;text-wrap:balance">From listening to lasting change.</h2>
+        <p style="font-size:16px;line-height:1.7;color:#565062;max-width:44ch;margin:20px 0 0;text-wrap:pretty">No hundred-slide strategy decks. Short cycles, real software, and outcomes measured with the people they serve.</p>
+        <img src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=800&q=60" alt="Team collaborating around a table" style="width:100%;max-width:420px;border-radius:18px;margin-top:28px;aspect-ratio:16/10;object-fit:cover" loading="lazy"></img>
+      </div>
+    </div>
+    <div id="hos-timeline" style="flex:1 1 420px;min-width:min(420px,100%);position:relative;padding-left:36px">
+      <div aria-hidden="true" style="position:absolute;left:11px;top:8px;bottom:8px;width:2px;background:#E7E3F0;border-radius:2px"></div>
+      <div id="hos-tl-fill" aria-hidden="true" style="position:absolute;left:11px;top:8px;width:2px;height:0;background:linear-gradient(#A78BFA,#FBBF24);border-radius:2px;transition:height .2s ease-out"></div>
+      <div style="display:flex;flex-direction:column;gap:clamp(28px,4vw,44px)">
+        <sc-for list="{{ steps }}" as="st" hint-placeholder-count="4">
+          <div data-reveal="" style="position:relative">
+            <span aria-hidden="true" style="position:absolute;left:-36px;top:4px;width:24px;height:24px;border-radius:50%;background:#fff;border:2px solid #A78BFA;display:flex;align-items:center;justify-content:center;font-family:'Space Grotesk',sans-serif;font-size:10px;font-weight:700;color:#7C3AED">{{ st.num }}</span>
+            <div style="background:#fff;border:1px solid #E7E3F0;border-radius:18px;padding:26px 28px;transition:border-color .25s,box-shadow .25s" style-hover="border-color:#D8CFF0;box-shadow:0 16px 40px -20px rgba(23,18,32,.16)">
+              <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+                <h3 style="font-family:'Space Grotesk',sans-serif;font-size:21px;font-weight:600;color:#17131F;margin:0">{{ st.title }}</h3>
+                <span style="font-size:12.5px;font-weight:600;color:#B45309;background:rgba(251,191,36,.14);border-radius:999px;padding:4px 12px">{{ st.tag }}</span>
+              </div>
+              <p style="font-size:15px;line-height:1.65;color:#565062;margin:10px 0 0;text-wrap:pretty">{{ st.desc }}</p>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="blog" data-screen-label="Blog" style="background:#F3F0FA;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div style="max-width:1240px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:20px">
+      <div>
+        <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B45309;margin-bottom:16px">Ideas &amp; writing</div>
+        <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,54px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#17131F;margin:0;max-width:18ch;text-wrap:balance">From the blog.</h2>
+      </div>
+      <a data-reveal="" href="https://www.humanismos.com/blog" target="_blank" rel="noopener" style="font-size:15px;font-weight:600;color:#7C3AED" style-hover="color:#A78BFA">All posts →</a>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr));gap:20px;margin-top:clamp(40px,5vw,64px)">
+      <sc-for list="{{ posts }}" as="po" hint-placeholder-count="3">
+        <a href="https://www.humanismos.com/blog" target="_blank" rel="noopener" data-reveal="" style="display:flex;flex-direction:column;background:#fff;border:1px solid #E7E3F0;border-radius:22px;overflow:hidden;color:inherit;transition:transform .3s,box-shadow .3s" style-hover="transform:translateY(-6px);box-shadow:0 28px 56px -24px rgba(23,18,32,.24);color:inherit">
+          <div style="height:190px;overflow:hidden"><img src="{{ po.img }}" alt="{{ po.alt }}" style="width:100%;height:100%;object-fit:cover" loading="lazy"></img></div>
+          <div style="padding:24px 26px 28px;display:flex;flex-direction:column;gap:10px">
+            <div style="font-size:12.5px;font-weight:600;color:#B45309;letter-spacing:.06em;text-transform:uppercase">{{ po.date }} · {{ po.read }}</div>
+            <h3 style="font-family:'Space Grotesk',sans-serif;font-size:19px;font-weight:600;letter-spacing:-0.01em;color:#17131F;margin:0;text-wrap:balance">{{ po.title }}</h3>
+            <p style="font-size:14.5px;line-height:1.6;color:#565062;margin:0;text-wrap:pretty">{{ po.desc }}</p>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="careers" data-screen-label="Careers" style="background:#FBFAFE;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div style="max-width:1240px;margin:0 auto">
+    <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B45309;margin-bottom:16px">Careers</div>
+    <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,54px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#17131F;margin:0;max-width:20ch;text-wrap:balance">Build infrastructure for human contribution.</h2>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(200px,100%),1fr));gap:14px;margin-top:clamp(36px,5vw,52px)">
+      <sc-for list="{{ cultureImgs }}" as="ci" hint-placeholder-count="4">
+        <div data-reveal="" style="border-radius:18px;overflow:hidden;aspect-ratio:4/3"><img src="{{ ci.img }}" alt="{{ ci.alt }}" style="width:100%;height:100%;object-fit:cover;transition:transform .5s" style-hover="transform:scale(1.05)" loading="lazy"></img></div>
+      </sc-for>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:clamp(36px,5vw,52px)">
+      <sc-for list="{{ roles }}" as="r" hint-placeholder-count="4">
+        <a href="mailto:prashant@mymastermindworks.com?subject=Application: {{ r.title }}" data-reveal="" style="display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;background:#fff;border:1px solid #E7E3F0;border-radius:16px;padding:20px 26px;color:inherit;transition:border-color .25s,transform .25s" style-hover="border-color:#A78BFA;transform:translateX(6px);color:inherit">
+          <div>
+            <div style="font-family:'Space Grotesk',sans-serif;font-size:18px;font-weight:600;color:#17131F">{{ r.title }}</div>
+            <div style="font-size:13.5px;color:#565062;margin-top:3px">{{ r.meta }}</div>
+          </div>
+          <span style="font-size:14px;font-weight:600;color:#7C3AED">Apply →</span>
+        </a>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section id="faq" data-screen-label="FAQ" style="background:#F3F0FA;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div style="max-width:840px;margin:0 auto">
+    <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#B45309;margin-bottom:16px;text-align:center">FAQ</div>
+    <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,50px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#17131F;margin:0 auto;max-width:18ch;text-align:center;text-wrap:balance">Questions, answered.</h2>
+    <div style="display:flex;flex-direction:column;gap:12px;margin-top:clamp(36px,5vw,52px)">
+      <sc-for list="{{ faqs }}" as="f" hint-placeholder-count="6">
+        <div data-reveal="" style="background:#fff;border:1px solid {{ f.border }};border-radius:16px;overflow:hidden;transition:border-color .25s">
+          <button onClick="{{ f.toggle }}" aria-expanded="{{ f.openStr }}" style="width:100%;display:flex;justify-content:space-between;align-items:center;gap:16px;background:none;border:none;cursor:pointer;text-align:left;padding:20px 24px;font-family:'Space Grotesk',sans-serif;font-size:16.5px;font-weight:600;color:#17131F">
+            {{ f.q }}
+            <span aria-hidden="true" style="flex-shrink:0;width:28px;height:28px;border-radius:50%;background:#F3F0FA;display:flex;align-items:center;justify-content:center;font-size:14px;color:#7C3AED;transition:transform .3s;transform:{{ f.chev }}">▾</span>
+          </button>
+          <div style="max-height:{{ f.mh }};overflow:hidden;transition:max-height .4s cubic-bezier(.2,.8,.2,1)">
+            <p style="font-size:15px;line-height:1.7;color:#565062;margin:0;padding:0 24px 22px;text-wrap:pretty">{{ f.a }}</p>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+</section>
+
+<section data-screen-label="Founder" style="background:#FBFAFE;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div data-reveal="" style="max-width:1000px;margin:0 auto;background:#fff;border:1px solid #E7E3F0;border-radius:26px;padding:clamp(32px,5vw,56px);display:flex;flex-wrap:wrap;gap:clamp(24px,4vw,48px);align-items:center;position:relative;overflow:hidden">
+    <div aria-hidden="true" style="position:absolute;top:-40%;right:-20%;width:60%;aspect-ratio:1/1;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.09),transparent 65%);pointer-events:none"></div>
+    <img src="https://www.humanismos.com/assets/founder.jpg" alt="Prashant Sheth, founder of HumanismOS" width="180" height="180" style="width:clamp(120px,16vw,180px);height:clamp(120px,16vw,180px);border-radius:24px;object-fit:cover;background:#E7E3F0"></img>
+    <div style="flex:1;min-width:min(320px,100%)">
+      <p style="font-family:'Space Grotesk',sans-serif;font-size:clamp(19px,2.4vw,26px);font-weight:500;line-height:1.45;letter-spacing:-0.01em;color:#17131F;margin:0;text-wrap:pretty">“People naturally want to contribute to each other. What's been missing is the infrastructure to make it happen. That's what we're building.”</p>
+      <div style="margin-top:22px;display:flex;align-items:center;gap:12px">
+        <span aria-hidden="true" style="width:28px;height:2px;background:#FBBF24;border-radius:2px"></span>
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;color:#17131F">Prashant Sheth</div>
+          <div style="font-size:13.5px;color:#877F97">Founder · Austin, Texas</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="connect" data-screen-label="Contact" style="position:relative;background:#120F1C;overflow:hidden;padding:clamp(80px,10vw,140px) clamp(20px,4vw,48px)">
+  <div aria-hidden="true" style="position:absolute;inset:0;pointer-events:none">
+    <div style="position:absolute;top:-25%;left:-10%;width:55vw;height:55vw;border-radius:50%;background:radial-gradient(circle,rgba(167,139,250,.12),transparent 60%);filter:blur(60px);animation:aurora2 20s ease-in-out infinite"></div>
+    <div style="position:absolute;bottom:-25%;right:-10%;width:45vw;height:45vw;border-radius:50%;background:radial-gradient(circle,rgba(251,191,36,.08),transparent 60%);filter:blur(70px);animation:aurora1 24s ease-in-out infinite"></div>
+  </div>
+  <div style="position:relative;max-width:1140px;margin:0 auto;display:flex;flex-wrap:wrap;gap:clamp(32px,6vw,72px)">
+    <div style="flex:1 1 380px;min-width:min(380px,100%)">
+      <div data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:12px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:#A78BFA;margin-bottom:16px">Connect</div>
+      <h2 data-reveal="" style="font-family:'Space Grotesk',sans-serif;font-size:clamp(32px,4.5vw,52px);font-weight:600;letter-spacing:-0.025em;line-height:1.1;color:#FBFAFE;margin:0;max-width:16ch;text-wrap:balance">Tell us where you are.</h2>
+      <p data-reveal="" style="font-size:16.5px;line-height:1.7;color:rgba(214,209,226,.8);max-width:48ch;margin:20px 0 0;text-wrap:pretty">So we can share what's most relevant to your journey — whether you're exploring, leading a group, transforming an organization, or building with us.</p>
+      <div data-reveal="" style="margin-top:36px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:24px 26px">
+        <div style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;color:#FBFAFE">Build with us</div>
+        <p style="font-size:14.5px;line-height:1.65;color:rgba(168,160,185,1);margin:8px 0 14px;text-wrap:pretty">We're creating infrastructure for human contribution. If that vision resonates, we'd welcome the conversation.</p>
+        <a href="mailto:prashant@mymastermindworks.com?subject=Building with HumanismOS" style="font-size:14.5px;font-weight:600;color:#A78BFA" style-hover="color:#C4B5FD">Let's talk →</a>
+      </div>
+    </div>
+    <div data-reveal="" style="flex:1 1 420px;min-width:min(420px,100%);background:rgba(26,22,38,.6);border:1px solid rgba(255,255,255,.1);backdrop-filter:blur(14px);border-radius:22px;padding:clamp(24px,3vw,36px)">
+      <label for="hos-name" style="display:block;font-size:13px;font-weight:600;color:rgba(214,209,226,.9);margin-bottom:8px">Name</label>
+      <input id="hos-name" type="text" placeholder="Your name" style="width:100%;box-sizing:border-box;background:rgba(18,15,28,.6);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 16px;font-size:15px;color:#fff;outline:none;transition:border-color .2s" style-focus="border-color:#A78BFA"></input>
+      <label for="hos-email" style="display:block;font-size:13px;font-weight:600;color:rgba(214,209,226,.9);margin:18px 0 8px">Email</label>
+      <input id="hos-email" type="email" placeholder="you@example.com" style="width:100%;box-sizing:border-box;background:rgba(18,15,28,.6);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 16px;font-size:15px;color:#fff;outline:none;transition:border-color .2s" style-focus="border-color:#A78BFA"></input>
+      <div style="font-size:13px;font-weight:600;color:rgba(214,209,226,.9);margin:18px 0 10px">I'm interested in…</div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <sc-for list="{{ interests }}" as="it" hint-placeholder-count="5">
+          <button onClick="{{ it.pick }}" style="cursor:pointer;font-size:13.5px;font-weight:500;font-family:Inter,sans-serif;color:{{ it.color }};background:{{ it.bg }};border:1px solid {{ it.border }};border-radius:999px;padding:9px 16px;transition:all .2s">{{ it.label }}</button>
+        </sc-for>
+      </div>
+      <label for="hos-msg" style="display:block;font-size:13px;font-weight:600;color:rgba(214,209,226,.9);margin:18px 0 8px">Where are you in your journey?</label>
+      <textarea id="hos-msg" rows="3" placeholder="Just exploring, ready to start, leading a group, want to invest…" style="width:100%;box-sizing:border-box;background:rgba(18,15,28,.6);border:1px solid rgba(255,255,255,.14);border-radius:12px;padding:14px 16px;font-size:15px;color:#fff;outline:none;resize:vertical;transition:border-color .2s" style-focus="border-color:#A78BFA"></textarea>
+      <button onClick="{{ submitContact }}" data-magnetic="" style="margin-top:22px;width:100%;cursor:pointer;border:none;font-family:Inter,sans-serif;font-size:15px;font-weight:600;color:#120F1C;background:linear-gradient(110deg,#A78BFA,#FBBF24,#A78BFA);background-size:200% auto;animation:shimmer 4s linear infinite;padding:16px 28px;border-radius:999px;transition:box-shadow .25s" style-hover="box-shadow:0 0 36px rgba(167,139,250,.4)">{{ submitLabel }}</button>
+    </div>
+  </div>
+</section>
+
+<footer data-screen-label="Footer" style="position:relative;background:#120F1C;border-top:1px solid rgba(255,255,255,.08);overflow:hidden;padding:clamp(56px,7vw,90px) clamp(20px,4vw,48px) 32px">
+  <div style="position:relative;max-width:1240px;margin:0 auto">
+    <div style="display:flex;flex-wrap:wrap;gap:clamp(32px,6vw,90px);justify-content:space-between">
+      <div style="max-width:340px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <img src="https://www.humanismos.com/assets/emblem-new.png" alt="HumanismOS emblem" width="28" height="28" style="display:block;border-radius:7px"></img>
+          <span style="font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:18px;color:#fff">HumanismOS</span>
+        </div>
+        <p style="font-size:14.5px;line-height:1.7;color:rgba(168,160,185,1);margin:16px 0 0;text-wrap:pretty">Creating the possibility of Connection, Trust and Love through Contribution.</p>
+        <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+          <sc-for list="{{ langs }}" as="lg" hint-placeholder-count="7">
+            <span style="font-size:12px;font-weight:600;color:rgba(168,160,185,.9);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:5px 9px">{{ lg }}</span>
+          </sc-for>
+        </div>
+      </div>
+      <sc-for list="{{ footerCols }}" as="col" hint-placeholder-count="3">
+        <div>
+          <div style="font-family:'Space Grotesk',sans-serif;font-size:13px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:rgba(214,209,226,.7);margin-bottom:16px">{{ col.title }}</div>
+          <div style="display:flex;flex-direction:column;gap:11px">
+            <sc-for list="{{ col.links }}" as="fl" hint-placeholder-count="4">
+              <a href="{{ fl.href }}" style="font-size:14.5px;color:rgba(168,160,185,1);transition:color .2s" style-hover="color:#A78BFA">{{ fl.label }}</a>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+    <div aria-hidden="true" style="font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:clamp(64px,12vw,160px);letter-spacing:-0.04em;line-height:1;color:rgba(255,255,255,.04);margin-top:clamp(40px,6vw,72px);user-select:none;white-space:nowrap;overflow:hidden">HumanismOS</div>
+    <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;border-top:1px solid rgba(255,255,255,.08);margin-top:8px;padding-top:24px">
+      <span style="font-size:13px;color:rgba(138,132,152,1)">© 2026 HumanismOS. All rights reserved.</span>
+      <span style="font-size:13px;color:rgba(138,132,152,1)">Made with care in Austin, Texas</span>
+    </div>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;heroVariant&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;collage&quot;,&quot;globe&quot;,&quot;aurora&quot;],&quot;default&quot;:&quot;collage&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Hero&quot;},&quot;reducedMotion&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Motion&quot;}}">
+class Component extends DCLogic {
+  state = {
+    wordIdx: 0,
+    menuOpen: false,
+    isMobile: typeof window !== 'undefined' && window.innerWidth < 1150,
+    interest: null,
+    sent: false,
+    openFaq: 0
+  };
+  words = ['Contribution.', 'Connection.', 'Care.', 'Cooperation.', 'Trust.', 'Kindness.'];
+
+  componentDidMount() {
+    this._timers = [];
+    const reduced = (this.props.reducedMotion ?? false) || window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.body.dataset.reducedMotion = String(this.props.reducedMotion ?? false);
+    if (!reduced) this._timers.push(setInterval(() => this.setState(s => ({ wordIdx: (s.wordIdx + 1) % this.words.length })), 2800));
+    this._onResize = () => {
+      const m = window.innerWidth < 1150;
+      if (m !== this.state.isMobile) this.setState({ isMobile: m, menuOpen: false });
+    };
+    window.addEventListener('resize', this._onResize);
+    this._onScroll = () => {
+      const y = window.scrollY;
+      const nav = document.getElementById('hos-nav');
+      if (nav) {
+        const on = y > 40;
+        nav.style.background = on ? 'rgba(18,15,28,.85)' : 'transparent';
+        nav.style.backdropFilter = on ? 'blur(14px)' : 'none';
+        nav.style.boxShadow = on ? '0 1px 0 rgba(255,255,255,.08)' : 'none';
+      }
+      const tl = document.getElementById('hos-timeline');
+      const fill = document.getElementById('hos-tl-fill');
+      if (tl && fill) {
+        const r = tl.getBoundingClientRect();
+        const vh = window.innerHeight;
+        const prog = Math.min(1, Math.max(0, (vh * 0.75 - r.top) / r.height));
+        fill.style.height = (prog * (r.height - 16)) + 'px';
+      }
+    };
+    window.addEventListener('scroll', this._onScroll, { passive: true });
+    this._onScroll();
+    setTimeout(() => this.wireMotion(reduced), 80);
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState && prevState.wordIdx !== this.state.wordIdx) {
+      const el = document.getElementById('hos-word');
+      if (el) {
+        el.style.animation = 'none';
+        void el.offsetWidth;
+        el.style.animation = 'wordIn .5s cubic-bezier(.2,.8,.2,1), shimmer 6s linear infinite';
+      }
+    }
+  }
+
+  componentWillUnmount() {
+    (this._timers || []).forEach(clearInterval);
+    window.removeEventListener('resize', this._onResize);
+    window.removeEventListener('scroll', this._onScroll);
+    if (this._io) this._io.disconnect();
+  }
+
+  wireMotion(reduced) {
+    const els = Array.from(document.querySelectorAll('[data-reveal]'));
+    if (!reduced && 'IntersectionObserver' in window) {
+      els.forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(26px)';
+        el.style.transition = 'opacity .7s cubic-bezier(.2,.8,.2,1), transform .7s cubic-bezier(.2,.8,.2,1)';
+      });
+      let stagger = 0;
+      this._io = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          if (en.isIntersecting) {
+            const d = Math.min(stagger++ % 4, 3) * 90;
+            setTimeout(() => {
+              en.target.style.opacity = '1';
+              en.target.style.transform = 'translateY(0)';
+            }, d);
+            this._io.unobserve(en.target);
+          }
+        });
+      }, { threshold: 0.12 });
+      els.forEach(el => this._io.observe(el));
+    }
+    if (!reduced && 'IntersectionObserver' in window) {
+      const cio = new IntersectionObserver(entries => {
+        entries.forEach(en => {
+          if (!en.isIntersecting) return;
+          cio.unobserve(en.target);
+          const target = parseInt(en.target.dataset.count, 10) || 0;
+          const t0 = performance.now(), dur = 1400;
+          const tick = (t) => {
+            const p = Math.min(1, (t - t0) / dur);
+            const eased = 1 - Math.pow(1 - p, 3);
+            en.target.textContent = String(Math.round(target * eased));
+            if (p < 1) requestAnimationFrame(tick);
+          };
+          requestAnimationFrame(tick);
+        });
+      }, { threshold: 0.5 });
+      document.querySelectorAll('[data-count]').forEach(el => cio.observe(el));
+    }
+    if (!reduced && matchMedia('(pointer:fine)').matches) {
+      document.querySelectorAll('[data-tilt]').forEach(card => {
+        card.addEventListener('mousemove', e => {
+          const r = card.getBoundingClientRect();
+          const rx = ((e.clientY - r.top) / r.height - 0.5) * -6;
+          const ry = ((e.clientX - r.left) / r.width - 0.5) * 8;
+          card.style.transform = `perspective(800px) rotateX(${rx}deg) rotateY(${ry}deg) translateY(-4px)`;
+        });
+        card.addEventListener('mouseleave', () => { card.style.transform = ''; });
+      });
+      document.querySelectorAll('[data-magnetic]').forEach(btn => {
+        btn.addEventListener('mousemove', e => {
+          const r = btn.getBoundingClientRect();
+          const dx = (e.clientX - r.left - r.width / 2) * 0.18;
+          const dy = (e.clientY - r.top - r.height / 2) * 0.28;
+          btn.style.transform = `translate(${dx}px,${dy}px)`;
+        });
+        btn.addEventListener('mouseleave', () => { btn.style.transform = ''; });
+      });
+      const hero = document.getElementById('top');
+      const spot = document.getElementById('hos-spot');
+      if (hero && spot) {
+        hero.addEventListener('mousemove', e => {
+          const r = hero.getBoundingClientRect();
+          spot.style.opacity = '1';
+          spot.style.background = `radial-gradient(600px circle at ${e.clientX - r.left}px ${e.clientY - r.top}px, rgba(167,139,250,.07), transparent 65%)`;
+        });
+        hero.addEventListener('mouseleave', () => { spot.style.opacity = '0'; });
+      }
+    }
+  }
+
+  renderVals() {
+    const v = this.props.heroVariant ?? 'collage';
+    const sel = this.state.interest;
+    const open = this.state.openFaq;
+    const interestList = ['Personal goals', 'Running a group', 'Community care', 'Enterprise partnership', 'Investing'];
+    const u = (id, w) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w || 800}&q=60`;
+    const faqData = [
+      { q: 'What does an engagement look like?', a: 'Most engagements run 6\u201312 weeks in short cycles: two weeks of listening and research, a framed roadmap, then working software in real hands by week five. We stay through adoption \u2014 the change has to compound after we leave.' },
+      { q: 'Do you work with nonprofits and public agencies?', a: 'Yes \u2014 community and public-sector work is core to our mission. CooperationEngine was built alongside nonprofits, agencies, and neighbors. We structure pricing so mission-driven organizations can afford serious technology.' },
+      { q: 'How do you think about AI ethics and data privacy?', a: 'Human-centered means privacy-first. We minimize data collection, keep personal data under your control, design for transparency in every AI-assisted decision, and build to WCAG accessibility standards from day one.' },
+      { q: 'Can you work with our existing systems?', a: 'Almost always. We start from what already works \u2014 your CRM, EHR, LMS, or spreadsheets \u2014 and build connective infrastructure around it rather than demanding a rip-and-replace.' },
+      { q: 'Where are you based?', a: 'Austin, Texas \u2014 working with organizations and communities across time zones, in seven languages: English, Spanish, French, Portuguese, Hindi, Chinese, and Pashto.' },
+      { q: 'How can I invest or partner?', a: 'We\u2019re building infrastructure for human contribution, and we welcome aligned partners. Email prashant@mymastermindworks.com with \u201CInvesting in HumanismOS\u201D and tell us what resonates.' }
+    ];
+    return {
+      isDesktop: !this.state.isMobile,
+      isMobile: this.state.isMobile,
+      menuOpen: this.state.menuOpen,
+      toggleMenu: () => this.setState(s => ({ menuOpen: !s.menuOpen })),
+      heroWord: this.words[this.state.wordIdx],
+      heroCollage: v === 'collage',
+      heroGlobe: v === 'globe',
+      heroAurora: v === 'aurora',
+      navLinks: [
+        { label: 'Story', href: '#story' },
+        { label: 'Services', href: '#services' },
+        { label: 'Platforms', href: '#platforms' },
+        { label: 'Cases', href: '#cases' },
+        { label: 'Industries', href: '#industries' },
+        { label: 'Stack', href: '#stack' },
+        { label: 'Blog', href: '#blog' },
+        { label: 'Careers', href: '#careers' },
+        { label: 'FAQ', href: '#faq' }
+      ],
+      heroStats: [
+        { n: 4, suffix: '', label: 'Platforms' },
+        { n: 7, suffix: '', label: 'Languages' },
+        { n: 8, suffix: '+', label: 'Industries' }
+      ],
+      auroraCards: [
+        { title: 'NeverLostTouch', sub: 'Relationships with the care of a calendar', dot: '#A78BFA', delay: '0s' },
+        { title: 'MyMastermindWorks', sub: 'Every contribution seen and acknowledged', dot: '#FBBF24', delay: '1.2s' },
+        { title: 'CooperationEngine', sub: 'Infrastructure for community care', dot: '#F0ABFC', delay: '2.4s' }
+      ],
+      moments: [
+        { app: 'NeverLostTouch', tint: '#B45309', img: 'https://www.humanismos.com/assets/moment-nlt.jpg', alt: 'A quiet moment with a phone', title: 'The call you haven\u2019t made', quote: '\u201CYou haven\u2019t called your father in three weeks. Not because you don\u2019t care \u2014 because life moved faster than your intentions.\u201D', whatif: 'What if staying connected remembered you?' },
+        { app: 'MyGoalWorks', tint: '#7C3AED', img: 'https://www.humanismos.com/assets/moment-mgw.jpg', alt: 'A person working toward a goal', title: 'The connections that don\u2019t connect', quote: '\u201CYou have 2,000 connections on LinkedIn. How many would you actually call if you needed help?\u201D', whatif: 'What if relationships were built on contribution, not transactions?' },
+        { app: 'MyMastermindWorks', tint: '#9333EA', img: 'https://www.humanismos.com/assets/moment-mmw.jpg', alt: 'A group meeting in session', title: 'The group that could be more', quote: '\u201CThe conversation is always great. But what actually happened between sessions? Nobody tracked it.\u201D', whatif: 'What if every offer and ask was seen and acknowledged?' },
+        { app: 'CooperationEngine', tint: '#6D28D9', img: 'https://www.humanismos.com/assets/moment-ce.jpg', alt: 'Neighbors in a community', title: 'The neighbor you could help', quote: '\u201CSomeone on your street lost their job last month. Three of your neighbors could help. None of them know.\u201D', whatif: 'What if your community had infrastructure for the care it already wants to give?' }
+      ],
+      metrics: [
+        { n: 4, suffix: '', label: 'Platforms live & in build' },
+        { n: 2, suffix: '', label: 'Books shaping the vision' },
+        { n: 7, suffix: '', label: 'Languages supported' },
+        { n: 8, suffix: '+', label: 'Industries served' }
+      ],
+      services: [
+        { num: '01', chip: 'linear-gradient(135deg,#A78BFA33,#A78BFA11)', title: 'AI Strategy & Advisory', desc: 'Roadmaps that start with human outcomes, not model benchmarks \u2014 where AI creates real value for the people your organization serves.' },
+        { num: '02', chip: 'linear-gradient(135deg,#FBBF2433,#FBBF2411)', title: 'Digital Transformation', desc: 'Modernizing systems, workflows, and culture so organizations can act on what they care about \u2014 sustainably and inclusively.' },
+        { num: '03', chip: 'linear-gradient(135deg,#F0ABFC33,#F0ABFC11)', title: 'Platform & Product Engineering', desc: 'From prototype to production: accessible, scalable, humane software \u2014 the same craft behind our own four platforms.' },
+        { num: '04', chip: 'linear-gradient(135deg,#7C3AED33,#7C3AED11)', title: 'Data & Intelligence', desc: 'Turning signals into judgment \u2014 decision support, agents, and analytics that people actually trust and use.' },
+        { num: '05', chip: 'linear-gradient(135deg,#B4530933,#B4530911)', title: 'Community & Social Innovation', desc: 'Coordination infrastructure at community scale \u2014 matching needs with resources across nonprofits, agencies, and neighbors.' },
+        { num: '06', chip: 'linear-gradient(135deg,#6D28D933,#6D28D911)', title: 'Enablement & Training', desc: 'Workshops, playbooks, and coaching that make AI an everyday practice \u2014 not a pilot that quietly stalls.' }
+      ],
+      platforms: [
+        { name: 'NeverLostTouch', logo: 'https://www.humanismos.com/assets/logo-neverlosttouch.png', status: 'Live', statusColor: '#7C3AED', statusBg: 'rgba(124,58,237,.12)', desc: 'Your relationships, with the same care as your calendar. Never let the people who matter drift away.', href: 'https://www.neverlosttouch.com', cta: 'Explore NeverLostTouch' },
+        { name: 'MyMastermindWorks', logo: 'https://www.humanismos.com/assets/logo-mymastermindworks.png', status: 'Live', statusColor: '#7C3AED', statusBg: 'rgba(124,58,237,.12)', desc: 'Every offer and ask in your mastermind or team \u2014 tracked, acknowledged, and followed through.', href: 'https://www.mymastermindworks.com', cta: 'Start your mastermind' },
+        { name: 'CooperationEngine', logo: 'https://www.humanismos.com/assets/logo-cooperationengine.png', status: 'Live', statusColor: '#7C3AED', statusBg: 'rgba(124,58,237,.12)', desc: 'Community infrastructure for the care it already wants to give \u2014 needs met by neighbors, nonprofits, and agencies.', href: 'https://www.cooperationengine.com', cta: 'Explore CooperationEngine' },
+        { name: 'MyGoalWorks', logo: 'https://www.humanismos.com/assets/logo-mygoalworks.png', status: 'Coming soon', statusColor: '#B45309', statusBg: 'rgba(251,191,36,.15)', desc: 'An AI coach to write the plan, your circle to check blind spots, and guides who\u2019ve walked the path.', href: '#connect', cta: 'Join the waitlist' }
+      ],
+      cases: [
+        { tag: 'Healthcare', img: u('photo-1576091160399-112ba8d25d1d'), alt: 'Clinician reviewing patient information', title: 'Care coordination that reaches patients before crisis', desc: 'A regional health network used contribution-graph infrastructure to connect care teams, family, and community resources around high-risk patients.', stat: '38%', statLabel: 'fewer missed follow-ups' },
+        { tag: 'Education', img: u('photo-1503676260728-1c00da094a0b'), alt: 'Students learning together', title: 'Mentorship at the scale of a school district', desc: 'A statewide education nonprofit matched students with mentors using MyGoalWorks-style journeys \u2014 tracked offers, asks, and follow-through.', stat: '3,200', statLabel: 'mentor matches made' },
+        { tag: 'Public sector', img: u('photo-1488521787991-ed7bbaae773c'), alt: 'Volunteers coordinating relief', title: 'A cooperation graph for disaster response', desc: 'A city resilience office deployed CooperationEngine to route needs to neighbors, nonprofits, and agencies during storm season.', stat: '4 hrs', statLabel: 'from 48-hour response time' }
+      ],
+      marqueeItems: ['Healthcare', 'Finance & Banking', 'Education', 'Government', 'Retail & E-commerce', 'Manufacturing', 'Energy', 'Logistics', 'Healthcare', 'Finance & Banking', 'Education', 'Government', 'Retail & E-commerce', 'Manufacturing', 'Energy', 'Logistics'],
+      industries: [
+        { name: 'Healthcare', img: u('photo-1576091160550-2173dba999ef'), alt: 'Healthcare professionals at work', value: 'Care coordination and patient connection \u2014 systems that treat people, not tickets.' },
+        { name: 'Finance & Banking', img: u('photo-1454165804606-c3d57bc86b40'), alt: 'Financial planning documents', value: 'Trust, transparency, and inclusion built into intelligent financial services.' },
+        { name: 'Education', img: u('photo-1523240795612-9a054b0db644'), alt: 'Students collaborating', value: 'Learning ecosystems that scale mentorship, not just content delivery.' },
+        { name: 'Government & Public sector', img: u('photo-1477959858617-67f85cf4f1df'), alt: 'City skyline at dusk', value: 'Public services that actually serve \u2014 accessible, multilingual, accountable.' },
+        { name: 'Retail & E-commerce', img: u('photo-1441986300917-64674bd600d8'), alt: 'A welcoming retail space', value: 'Customer relationships beyond the transaction \u2014 loyalty earned, not bought.' },
+        { name: 'Manufacturing', img: u('photo-1581091226825-a6a2a5aee158'), alt: 'Engineer at a workstation', value: 'Human judgment amplified on the line with practical, trusted intelligence.' },
+        { name: 'Energy', img: u('photo-1466611653911-95081537e5b7'), alt: 'Wind turbines in a field', value: 'Decision intelligence for sustainable, resilient systems and grids.' },
+        { name: 'Logistics', img: u('photo-1586528116311-ad8dd3c8310d'), alt: 'Shipping containers at port', value: 'Coordination as a first-class product \u2014 people, fleets, and networks in sync.' }
+      ],
+      stack: [
+        { cat: 'AI & Intelligence', color: '#A78BFA', items: ['LLM agents', 'RAG pipelines', 'Vector search', 'Speech & translation', 'Evaluation & guardrails'] },
+        { cat: 'Platform', color: '#FBBF24', items: ['Next.js', 'React', 'TypeScript', 'Tailwind CSS', 'Framer Motion', 'Three.js'] },
+        { cat: 'Data & Cloud', color: '#F0ABFC', items: ['PostgreSQL', 'Supabase', 'Redis', 'Vercel', 'AWS'] },
+        { cat: 'Trust & Access', color: '#C4B5FD', items: ['WCAG 2.2', 'E2E encryption', 'SOC 2 readiness', '7 languages', 'Privacy by design'] }
+      ],
+      techMarquee: ['Next.js', 'React', 'TypeScript', 'LLM Agents', 'RAG', 'PostgreSQL', 'Tailwind', 'Framer Motion', 'Three.js', 'Vercel', 'Supabase', 'WCAG 2.2', 'Next.js', 'React', 'TypeScript', 'LLM Agents', 'RAG', 'PostgreSQL', 'Tailwind', 'Framer Motion', 'Three.js', 'Vercel', 'Supabase', 'WCAG 2.2'],
+      steps: [
+        { num: '01', title: 'Listen', tag: 'Weeks 1\u20132', desc: 'Immersion and research with the people your systems serve \u2014 leaders, staff, and communities. We map what already works.' },
+        { num: '02', title: 'Frame', tag: 'Weeks 3\u20134', desc: 'A strategy and roadmap anchored to human outcomes and measurable value \u2014 scoped to what your organization can absorb.' },
+        { num: '03', title: 'Build', tag: 'Weeks 5\u201312', desc: 'Accessible, scalable design and engineering in short cycles \u2014 real software in real hands within weeks, not quarters.' },
+        { num: '04', title: 'Grow', tag: 'Ongoing', desc: 'Adoption, training, and measurement with the people affected \u2014 so the change compounds instead of fading.' }
+      ],
+      posts: [
+        { img: u('photo-1620712943543-bcc4688e7485'), alt: 'Abstract AI visualization', date: 'Jun 2026', read: '6 min', title: 'Capital beyond currency: measuring what you contribute', desc: 'Reputation, expertise, track record, loyalty \u2014 what happens when contribution becomes visible and countable.' },
+        { img: u('photo-1553877522-43269d4ea984'), alt: 'Team sketching ideas on a whiteboard', date: 'May 2026', read: '5 min', title: 'Designing AI that remembers people, not just data', desc: 'Why the next generation of assistants should protect relationships the way calendars protect time.' },
+        { img: u('photo-1526628953301-3e589a6a8b74'), alt: 'Data visualization on screen', date: 'Apr 2026', read: '8 min', title: 'The cooperation graph: infrastructure for care', desc: 'How communities can route needs to neighbors, nonprofits, and agencies \u2014 in hours instead of weeks.' }
+      ],
+      cultureImgs: [
+        { img: u('photo-1522071820081-009f0129c71c'), alt: 'Team working together' },
+        { img: u('photo-1531482615713-2afd69097998'), alt: 'Colleagues pairing at a desk' },
+        { img: u('photo-1517048676732-d65bc937f952'), alt: 'A team discussion in progress' },
+        { img: u('photo-1543269865-cbf427effbad'), alt: 'Collaborative work session' }
+      ],
+      roles: [
+        { title: 'Founding Full-stack Engineer', meta: 'Austin or Remote \u00B7 Full-time \u00B7 TypeScript, Next.js, AI systems' },
+        { title: 'Product Designer', meta: 'Austin or Remote \u00B7 Full-time \u00B7 Human-centered, accessibility-first' },
+        { title: 'AI Engineer', meta: 'Remote \u00B7 Full-time \u00B7 Agents, RAG, evaluation' },
+        { title: 'Community Partnerships Lead', meta: 'Austin \u00B7 Full-time \u00B7 Nonprofits, agencies, civic networks' }
+      ],
+      faqs: faqData.map((f, i) => ({
+        q: f.q, a: f.a,
+        toggle: () => this.setState({ openFaq: open === i ? -1 : i }),
+        openStr: String(open === i),
+        mh: open === i ? '260px' : '0px',
+        chev: open === i ? 'rotate(180deg)' : 'rotate(0deg)',
+        border: open === i ? '#A78BFA' : '#E7E3F0'
+      })),
+      interests: interestList.map(label => ({
+        label,
+        pick: () => this.setState({ interest: label }),
+        bg: sel === label ? 'rgba(167,139,250,.15)' : 'rgba(255,255,255,.05)',
+        color: sel === label ? '#A78BFA' : 'rgba(214,209,226,.85)',
+        border: sel === label ? 'rgba(167,139,250,.5)' : 'rgba(255,255,255,.14)'
+      })),
+      submitLabel: this.state.sent ? 'Opening your email…' : 'Start the conversation →',
+      submitContact: () => {
+        const name = (document.getElementById('hos-name') || {}).value || '';
+        const email = (document.getElementById('hos-email') || {}).value || '';
+        const msg = (document.getElementById('hos-msg') || {}).value || '';
+        const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\nInterested in: ${sel || '\u2014'}\n\n${msg}`);
+        window.location.href = `mailto:prashant@mymastermindworks.com?subject=${encodeURIComponent('Connecting with HumanismOS')}&body=${body}`;
+        this.setState({ sent: true });
+        setTimeout(() => this.setState({ sent: false }), 3000);
+      },
+      langs: ['EN', 'ES', 'FR', 'PT', 'HI', 'ZH', 'PS'],
+      footerCols: [
+        { title: 'Explore', links: [ { label: 'Story', href: '#story' }, { label: 'Services', href: '#services' }, { label: 'Case studies', href: '#cases' }, { label: 'Industries', href: '#industries' }, { label: 'Careers', href: '#careers' } ] },
+        { title: 'Platforms', links: [ { label: 'NeverLostTouch', href: 'https://www.neverlosttouch.com' }, { label: 'MyMastermindWorks', href: 'https://www.mymastermindworks.com' }, { label: 'CooperationEngine', href: 'https://www.cooperationengine.com' }, { label: 'MyGoalWorks', href: '#connect' } ] },
+        { title: 'Connect', links: [ { label: 'Blog', href: 'https://www.humanismos.com/blog' }, { label: 'FAQ', href: '#faq' }, { label: 'Start a conversation', href: '#connect' }, { label: 'Build with us', href: 'mailto:prashant@mymastermindworks.com?subject=Investing in HumanismOS' } ] }
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
